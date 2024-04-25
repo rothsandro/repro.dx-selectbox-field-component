@@ -20,6 +20,17 @@ describe("<App />", () => {
       ).toBeInTheDocument();
     });
 
+    test("adds the aria attributes on the combobox", () => {
+      render(<SelectBox {...baseProps} />);
+
+      const input = screen.getByLabelText(/Weekday/);
+
+      expect(input).toHaveAttribute("aria-haspopup", "listbox");
+      expect(input).toHaveAttribute("aria-autocomplete", "list");
+      expect(input).toHaveAttribute("aria-controls");
+      expect(input).toHaveAttribute("aria-owns");
+    });
+
     test("renders the dropdown options", async () => {
       const user = userEvent.setup();
       render(<SelectBox {...baseProps} />);
@@ -64,6 +75,20 @@ describe("<App />", () => {
       expect(
         screen.getByRole("combobox", { name: /Weekday/ })
       ).toBeInTheDocument();
+    });
+
+    /**
+     * Doesn't work, some of the attributes are missing
+     */
+    test("adds the aria attributes on the combobox", () => {
+      render(<SelectBox {...baseProps} fieldComponent={FieldComponent} />);
+
+      const input = screen.getByLabelText(/Weekday/);
+
+      expect(input).toHaveAttribute("aria-haspopup", "listbox");
+      expect(input).toHaveAttribute("aria-autocomplete", "list");
+      expect(input).toHaveAttribute("aria-controls");
+      expect(input).toHaveAttribute("aria-owns");
     });
 
     test("renders the dropdown options", async () => {
