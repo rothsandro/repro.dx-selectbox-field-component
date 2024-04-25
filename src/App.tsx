@@ -1,18 +1,19 @@
 import "devextreme/dist/css/dx.light.css";
-import { SelectBox, TextBox } from "devextreme-react";
+import { Button, SelectBox, TextBox } from "devextreme-react";
 import { FC, useLayoutEffect } from "react";
 import { RequiredRule, Validator } from "devextreme-react/validator";
 
 function App() {
   return (
-    <>
+    <form onSubmit={(e) => e.preventDefault()}>
       <SelectBox {...baseProps} label="Weekday (default)" />
       <SelectBox
         {...baseProps}
         label="Weekday (with custom component)"
         fieldComponent={FieldComponent}
       />
-    </>
+      <Button useSubmitBehavior text="Submit" />
+    </form>
   );
 }
 

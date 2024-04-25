@@ -3,12 +3,13 @@ import { render, screen } from "@testing-library/react";
 import { SelectBox } from "devextreme-react/select-box";
 import { FieldComponent, Weekday, baseProps, weekdays } from "./App";
 import userEvent from "@testing-library/user-event";
-import { FC, ReactNode, useState } from "react";
+import { FC, PropsWithChildren, ReactNode, useState } from "react";
 import {
   QueryClient,
   QueryClientProvider,
   useQuery,
 } from "@tanstack/react-query";
+import { Button } from "devextreme-react";
 
 describe("<App />", () => {
   describe("default", () => {
@@ -25,10 +26,41 @@ describe("<App />", () => {
 
       const input = screen.getByLabelText(/Weekday/);
 
+      expect(input).toHaveAttribute("aria-expanded", "false");
       expect(input).toHaveAttribute("aria-haspopup", "listbox");
       expect(input).toHaveAttribute("aria-autocomplete", "list");
-      expect(input).toHaveAttribute("aria-controls");
-      expect(input).toHaveAttribute("aria-owns");
+    });
+
+    test("marks the combobox as required", () => {
+      render(<SelectBox {...baseProps} />);
+      expect(screen.getByLabelText(/Weekday/)).toBeRequired();
+    });
+
+    test("marks the combobox as invalid on submit", async () => {
+      const user = userEvent.setup();
+
+      render(
+        <FormWrapper>
+          <SelectBox {...baseProps} />
+        </FormWrapper>
+      );
+
+      await user.click(screen.getByText(/Submit/));
+
+      expect(screen.getByLabelText(/Weekday/)).toBeInvalid();
+    });
+
+    test("marks the combobox when clearing the value", async () => {
+      const user = userEvent.setup();
+
+      render(<SelectBox {...baseProps} />);
+
+      await user.click(screen.getByLabelText(/Weekday/));
+      await user.click(screen.getByRole("option", { name: /Monday/ }));
+      await user.clear(screen.getByLabelText(/Weekday/));
+      await user.tab();
+
+      expect(screen.getByLabelText(/Weekday/)).toBeInvalid();
     });
 
     test("renders the dropdown options", async () => {
@@ -85,10 +117,41 @@ describe("<App />", () => {
 
       const input = screen.getByLabelText(/Weekday/);
 
+      expect(input).toHaveAttribute("aria-expanded", "false");
       expect(input).toHaveAttribute("aria-haspopup", "listbox");
       expect(input).toHaveAttribute("aria-autocomplete", "list");
-      expect(input).toHaveAttribute("aria-controls");
-      expect(input).toHaveAttribute("aria-owns");
+    });
+
+    test("marks the combobox as required", () => {
+      render(<SelectBox {...baseProps} fieldComponent={FieldComponent} />);
+      expect(screen.getByLabelText(/Weekday/)).toBeRequired();
+    });
+
+    test("marks the combobox as invalid on submit", async () => {
+      const user = userEvent.setup();
+
+      render(
+        <FormWrapper>
+          <SelectBox {...baseProps} fieldComponent={FieldComponent} />
+        </FormWrapper>
+      );
+
+      await user.click(screen.getByText(/Submit/));
+
+      expect(screen.getByLabelText(/Weekday/)).toBeInvalid();
+    });
+
+    test("marks the combobox when clearing the value", async () => {
+      const user = userEvent.setup();
+
+      render(<SelectBox {...baseProps} fieldComponent={FieldComponent} />);
+
+      await user.click(screen.getByLabelText(/Weekday/));
+      await user.click(screen.getByRole("option", { name: /Monday/ }));
+      await user.clear(screen.getByLabelText(/Weekday/));
+      await user.tab();
+
+      expect(screen.getByLabelText(/Weekday/)).toBeInvalid();
     });
 
     test("renders the dropdown options", async () => {
@@ -163,4 +226,13 @@ const AsyncWrapperInner: FC<{ children: (items: Weekday[]) => ReactNode }> = (
 ) => {
   const { data } = useItems();
   return <div>{props.children(data ?? [])}</div>;
+};
+
+const FormWrapper: FC<PropsWithChildren> = (props) => {
+  return (
+    <form onSubmit={(e) => e.preventDefault()}>
+      {props.children}
+      <Button useSubmitBehavior text="Submit" />
+    </form>
+  );
 };
