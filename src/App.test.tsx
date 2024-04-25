@@ -31,6 +31,11 @@ describe("<App />", () => {
       expect(input).toHaveAttribute("aria-autocomplete", "list");
     });
 
+    test("marks the combobox as readOnly", () => {
+      render(<SelectBox {...baseProps} readOnly />);
+      expect(screen.getByLabelText(/Weekday/)).toHaveAttribute("readonly");
+    });
+
     test("marks the combobox as required", () => {
       render(<SelectBox {...baseProps} />);
       expect(screen.getByLabelText(/Weekday/)).toBeRequired();
@@ -120,6 +125,13 @@ describe("<App />", () => {
       expect(input).toHaveAttribute("aria-expanded", "false");
       expect(input).toHaveAttribute("aria-haspopup", "listbox");
       expect(input).toHaveAttribute("aria-autocomplete", "list");
+    });
+
+    test("marks the combobox as readOnly", () => {
+      render(
+        <SelectBox {...baseProps} fieldComponent={FieldComponent} readOnly />
+      );
+      expect(screen.getByLabelText(/Weekday/)).toHaveAttribute("readonly");
     });
 
     test("marks the combobox as required", () => {
